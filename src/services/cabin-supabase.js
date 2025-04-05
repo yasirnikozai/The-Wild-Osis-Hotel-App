@@ -11,55 +11,62 @@ export async function getCabin() {
 
 export async function addCabin(newCabin, id) {
   const hasImage =
-    typeof newCabin?.image === "string" && newCabin.image.startsWith("https");
-  console.log(hasImage);
-  // Validate the image file (only if it's a new upload)
-  if (!newCabin.image || !newCabin.image.type.startsWith("image/")) {
-    throw new Error("Invalid image file");
+    typeof newCabin.image === "string" &&
+    newCabin.image.startsWith(supabaseUrl);
+
+  // ✅ If image is a new File, validate its type
+  if (
+    !hasImage &&
+    (!newCabin.image || !newCabin.image.type?.startsWith("image/"))
+  ) {
+    throw new Error("Invalid image file. Please upload a valid image.");
   }
 
-  let imageUrl = newCabin.image; // Default to existing image
+  let imageUrl = newCabin.image; // Use existing URL if it's already uploaded
 
+  // 🖼️ Upload to Supabase Storage if it's a new image file
   if (!hasImage) {
     const imageName = `${Date.now()}-${Math.random()
       .toString(36)
       .substring(2)}-${newCabin.image.name}`;
     const imagePath = `cabins-image/${imageName}`;
 
-    // Upload image to Supabase Storage
     const { error: storageError } = await supabase.storage
       .from("cabins-image")
       .upload(imagePath, newCabin.image);
 
     if (storageError) {
-      console.log(storageError);
-      throw new Error("Failed to upload image");
+      console.error("Storage Upload Error:", storageError);
+      throw new Error("Failed to upload image to storage.");
     }
 
-    // Get the public URL from Supabase
-    imageUrl = supabase.storage
+    // 🔗 Get the public URL after successful upload
+    const { publicUrl } = supabase.storage
       .from("cabins-image")
-      .getPublicUrl(imagePath).publicUrl;
+      .getPublicUrl(imagePath);
+
+    imageUrl = publicUrl;
   }
 
+  // 📥 Insert or Update Cabin
   let query = supabase.from("cabins");
 
   if (id) {
-    // Update existing cabin
+    // ✏️ Update existing cabin
     query = query.update({ ...newCabin, image: imageUrl }).eq("id", id);
   } else {
-    // Insert new cabin
+    // ➕ Insert new cabin
     query = query.insert([{ ...newCabin, image: imageUrl }]);
   }
 
-  // Execute the query and get the result
+  // 🧾 Execute and fetch the inserted/updated record
   const { data, error } = await query.select().maybeSingle();
 
   if (error) {
-    console.log("Supabase Error:", error.message);
-    console.log("Supabase Details:", error.details);
-    console.log("Supabase Hint:", error.hint);
-    throw new Error("Failed to insert cabin data");
+    console.error("Supabase Error:", error.message);
+    console.error("Details:", error.details);
+    console.error("Hint:", error.hint);
+    throw new Error("Failed to save cabin data.");
   }
 
   return data;
