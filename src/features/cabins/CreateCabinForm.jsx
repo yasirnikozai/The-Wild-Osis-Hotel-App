@@ -7,8 +7,10 @@ import Input from "../../ui/FileInput"; // ✅ FileInput only for file upload
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addCabin } from "../../services/cabin-supabase";
+
 import toast from "react-hot-toast";
+import useEditCabin from "./updateCabin";
+import useCreateCabin from "./createCabin";
 
 const FormRow = styled.div`
   display: grid;
@@ -53,40 +55,36 @@ function CreateCabinForm({ cabinToEdit = {}, onClose }) {
   });
   const { errors } = formState;
   const queryClient = useQueryClient();
-  const { mutate: isCreatingCabin, isLoading: isCreating } = useMutation({
-    mutationFn: addCabin,
-    onSuccess: () => {
-      toast.success("New cabin has been added");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      if (onClose) onClose();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-  const { mutate: isUpdatingCabin, isLoading: isUpdating } = useMutation({
-    mutationFn: ({ newCabindata, id }) => addCabin(newCabindata, id),
-    onSuccess: () => {
-      toast.success("New cabin has been Updated");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-      if (onClose) onClose();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
+  const { isCreatingCabin, isCreating } = useCreateCabin();
+  const { isUpdatingCabin, isUpdating } = useEditCabin();
   const isWorking = isCreating || isUpdating;
   function onSubmit(data) {
-    const image = typeof data.image === "string" ? data.image : data.image[0];
-    if (isEditSession)
-      isUpdatingCabin({ newCabindata: { ...data, image }, id: editId });
-    else isCreatingCabin({ ...data, image: data.image[0] });
-  }
+    // Safely extract image (File object or existing URL)
+    const image =
+      typeof data.image === "string" ? data.image : data.image?.[0] || null; // fallback if no file selected
 
+    const cabinPayload = { ...data, image };
+
+    if (isEditSession) {
+      isUpdatingCabin(
+        { newCabindata: cabinPayload, id: editId },
+        {
+          onSuccess: () => {
+            toast.success("Cabin updated successfully!");
+            reset();
+            onClose(); // Close form after successful update
+          },
+        }
+      );
+    } else {
+      isCreatingCabin(cabinPayload, {
+        onSuccess: () => {
+          toast.success("Cabin added successfully!");
+          reset();
+        },
+      });
+    }
+  }
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow>

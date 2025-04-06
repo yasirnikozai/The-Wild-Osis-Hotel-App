@@ -28,15 +28,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getCabin } from "../../services/cabin-supabase";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
+import { useCabins } from "./useCabins";
 export default function CabinTable() {
-  const {
-    isLoading,
-    data: cabins,
-    error,
-  } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getCabin,
-  });
+  const { isLoading, cabins } = useCabins();
   if (isLoading) return <Spinner />;
   return (
     <Table role="table">
