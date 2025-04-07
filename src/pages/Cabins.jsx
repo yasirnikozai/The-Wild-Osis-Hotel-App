@@ -4,11 +4,9 @@ import Row from "../ui/Row";
 import CabinTable from "../../src/features/cabins/CabinTable";
 import Button from "../ui/Button";
 import CreateCabinForm from "../features/cabins/CreateCabinForm";
+import AddCabin from "../features/cabins/AddCabin";
 
 function Cabins() {
-  // ✅ Use array destructuring
-  const [showForm, setShowForm] = useState(false);
-
   return (
     <>
       <Row type="horizontal">
@@ -16,15 +14,8 @@ function Cabins() {
       </Row>
       <Row>
         <CabinTable />
-        <Button
-          onClick={() => setShowForm((show) => !show)}
-          size="large"
-          variation="primary"
-        >
-          {showForm ? "Close Form" : "Add new Cabin"}
-        </Button>
-        {showForm && <CreateCabinForm />}
       </Row>
+      <AddCabin />
     </>
   );
 }

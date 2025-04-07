@@ -47,7 +47,7 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm({ cabinToEdit = {}, onClose }) {
+function CreateCabinForm({ cabinToEdit = {}, onClose, onCloseModel }) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
   const { register, handleSubmit, reset, formState } = useForm({
@@ -81,12 +81,16 @@ function CreateCabinForm({ cabinToEdit = {}, onClose }) {
         onSuccess: () => {
           toast.success("Cabin added successfully!");
           reset();
+          onCloseModel?.();
         },
       });
     }
   }
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit)}
+      type={onCloseModel ? "modal" : "regular"}
+    >
       <FormRow>
         <Label htmlFor="name">Cabin name</Label>
         <Input
@@ -146,7 +150,11 @@ function CreateCabinForm({ cabinToEdit = {}, onClose }) {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModel?.()}
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
