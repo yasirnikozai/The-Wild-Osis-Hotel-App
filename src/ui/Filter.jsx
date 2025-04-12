@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled, { css } from "styled-components";
 
@@ -17,7 +16,7 @@ const FilterButton = styled.button`
   border: none;
 
   ${(props) =>
-    props.active &&
+    props.$active &&
     css`
       background-color: var(--color-brand-600);
       color: var(--color-brand-50);
@@ -26,7 +25,6 @@ const FilterButton = styled.button`
   border-radius: var(--border-radius-sm);
   font-weight: 500;
   font-size: 1.4rem;
-  /* To give the same height as select */
   padding: 0.44rem 0.8rem;
   transition: all 0.3s;
 
@@ -35,22 +33,35 @@ const FilterButton = styled.button`
     color: var(--color-brand-50);
   }
 `;
+
 function Filter() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const currentFilter = searchParams.get("discount") || "all";
+
+  const options = [
+    { label: "All", value: "all" },
+    { label: "Discount", value: "discount" },
+    { label: "No Discount", value: "no-discount" },
+  ];
+
   function handleClick(value) {
     searchParams.set("discount", value);
     setSearchParams(searchParams);
   }
+
   return (
     <StyledFilter>
-      <FilterButton onClick={() => handleClick("all")}>All</FilterButton>
-      <FilterButton onClick={() => handleClick("discount")}>
-        Discount
-      </FilterButton>
-      <FilterButton onClick={() => handleClick("no-discount")}>
-        No Discount
-      </FilterButton>
+      {options.map(({ label, value }) => (
+        <FilterButton
+          key={value}
+          onClick={() => handleClick(value)}
+          $active={currentFilter === value}
+        >
+          {label}
+        </FilterButton>
+      ))}
     </StyledFilter>
   );
 }
+
 export default Filter;
