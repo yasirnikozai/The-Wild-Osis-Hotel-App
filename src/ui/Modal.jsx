@@ -1,5 +1,18 @@
+// imports
+import React, {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
+import { HiXMark } from "react-icons/hi2";
+import { createPortal } from "react-dom";
+import { useClickOutside } from "../features/cabins/outsideClick";
 
+// Styled Components
 const StyledModal = styled.div`
   position: fixed;
   top: 50%;
@@ -42,23 +55,56 @@ const Button = styled.button`
   & svg {
     width: 2.4rem;
     height: 2.4rem;
-    /* Sometimes we need both */
-    /* fill: var(--color-grey-500);
-    stroke: var(--color-grey-500); */
     color: var(--color-grey-500);
   }
 `;
-import React from "react";
 
-import { HiXMark } from "react-icons/hi2";
+// Modal Context
+const ModalContext = createContext();
 
-export default function Modal({ children, onClose }) {
+// Main Modal Component
+function Modal({ children }) {
+  const [openName, setOpenName] = useState("");
+
+  const open = (name) => setOpenName(name); // ✅ Fix: Function should call setOpenName
+  const close = () => setOpenName(""); // ✅ Fix: Close should reset the state
+
   return (
-    <Overlay>
-      <Button onClick={onClose}>
-        <HiXMark />
-      </Button>
-      <StyledModal>{children}</StyledModal>;
-    </Overlay>
+    <ModalContext.Provider value={{ openName, open, close }}>
+      {children}
+    </ModalContext.Provider>
   );
 }
+
+// Modal.Open Component
+function Open({ opens, children }) {
+  const { open } = useContext(ModalContext);
+  return cloneElement(children, {
+    onClick: () => open(opens),
+  });
+}
+
+// Modal.Window Component
+function Window({ children, name }) {
+  const { openName, close } = useContext(ModalContext);
+  const modalRef = useClickOutside(close);
+
+  if (name !== openName) return null;
+  return createPortal(
+    <Overlay>
+      <StyledModal ref={modalRef}>
+        <Button onClick={close}>
+          <HiXMark />
+        </Button>
+        <div>{cloneElement(children, { onClose: close })}</div>
+      </StyledModal>
+    </Overlay>,
+    document.body
+  );
+}
+
+// Attach subcomponents to Modal
+Modal.Open = Open;
+Modal.Window = Window;
+
+export default Modal;
