@@ -14,9 +14,9 @@ function Cabins() {
         <Heading as="h1">All cabins</Heading>
         <CabinTableOperation />
       </Row>
-      <Row>
-        <CabinTable />
-      </Row>
+
+      <CabinTable />
+
       <AddCabin />
     </>
   );

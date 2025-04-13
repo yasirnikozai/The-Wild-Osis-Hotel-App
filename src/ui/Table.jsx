@@ -29,6 +29,7 @@ const StyledHeader = styled(CommonRow)`
 
 const StyledRow = styled(CommonRow)`
   padding: 1.2rem 2.4rem;
+  grid-template-columns: ${(props) => props.columns};
 
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-grey-100);
@@ -70,7 +71,6 @@ function Body({ data, render }) {
   return <StyledBody>{data.map(render)}</StyledBody>;
 }
 
-// Export Row and Footer if you want to use them separately
 Table.Header = Header;
 Table.Body = Body;
 Table.Row = StyledRow;

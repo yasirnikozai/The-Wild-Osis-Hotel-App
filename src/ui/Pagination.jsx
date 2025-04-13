@@ -1,10 +1,13 @@
 import styled from "styled-components";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 
+// Styled Components
 const StyledPagination = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 2rem;
 `;
 
 const P = styled.p`
@@ -37,21 +40,61 @@ const PaginationButton = styled.button`
   padding: 0.6rem 1.2rem;
   transition: all 0.3s;
 
-  &:has(span:last-child) {
-    padding-left: 0.4rem;
-  }
-
-  &:has(span:first-child) {
-    padding-right: 0.4rem;
-  }
-
-  & svg {
-    height: 1.8rem;
-    width: 1.8rem;
-  }
-
   &:hover:not(:disabled) {
     background-color: var(--color-brand-600);
     color: var(--color-brand-50);
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
+
+// Component
+function Pagination({ count, page, onPageChange, pageSize = 10 }) {
+  const pageCount = Math.ceil(count / pageSize);
+  if (pageCount <= 1) return null;
+
+  function handlePrevious() {
+    if (page > 1) onPageChange(page - 1);
+  }
+
+  function handleNext() {
+    if (page < pageCount) onPageChange(page + 1);
+  }
+
+  return (
+    <StyledPagination>
+      <P>
+        Showing <span>{(page - 1) * pageSize + 1}</span> to{" "}
+        <span>{Math.min(page * pageSize, count)}</span> of <span>{count}</span>{" "}
+        results
+      </P>
+
+      <Buttons>
+        <PaginationButton onClick={handlePrevious} disabled={page === 1}>
+          <HiChevronLeft />
+          <span>Previous</span>
+        </PaginationButton>
+
+        {Array.from({ length: pageCount }, (_, i) => (
+          <PaginationButton
+            key={i + 1}
+            active={page === i + 1}
+            onClick={() => onPageChange(i + 1)}
+          >
+            {i + 1}
+          </PaginationButton>
+        ))}
+
+        <PaginationButton onClick={handleNext} disabled={page === pageCount}>
+          <span>Next</span>
+          <HiChevronRight />
+        </PaginationButton>
+      </Buttons>
+    </StyledPagination>
+  );
+}
+
+export default Pagination;
