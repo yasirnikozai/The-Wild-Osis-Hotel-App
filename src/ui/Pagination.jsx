@@ -68,7 +68,7 @@ function Pagination({ count, page, onPageChange, pageSize = 10 }) {
     <StyledPagination>
       <P>
         Showing <span>{(page - 1) * pageSize + 1}</span> to{" "}
-        <span>{Math.min(page * pageSize, count)}</span> of <span>{count}</span>{" "}
+        <span>{Math.min(page * pageSize, count)}</span> of <span>{count}</span>
         results
       </P>
 
