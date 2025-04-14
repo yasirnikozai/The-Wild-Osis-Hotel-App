@@ -34,18 +34,12 @@ const FilterButton = styled.button`
   }
 `;
 
-function Filter() {
+function Filter({ filterField, options }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentFilter = searchParams.get("discount") || "all";
-
-  const options = [
-    { label: "All", value: "all" },
-    { label: "Discount", value: "discount" },
-    { label: "No Discount", value: "no-discount" },
-  ];
+  const currentFilter = searchParams.get(filterField) || "all";
 
   function handleClick(value) {
-    searchParams.set("discount", value);
+    searchParams.set(filterField, value);
     setSearchParams(searchParams);
   }
 

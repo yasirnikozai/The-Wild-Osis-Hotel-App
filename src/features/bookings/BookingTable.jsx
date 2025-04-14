@@ -5,7 +5,7 @@ import Empty from "../../ui/Empty";
 import { useBookings } from "./useBookings";
 import Spinner from "../../ui/Spinner";
 import Table from "../../ui/Table";
-
+import Pagination from "../../ui/Pagination";
 const COLUMNS = "1.5fr 2fr 2.5fr 1.5fr 1fr 1fr"; // Same layout for all rows & header
 
 function BookingTable() {
