@@ -7,7 +7,7 @@ import Spinner from "../../ui/Spinner";
 import Table from "../../ui/Table";
 import Pagination from "../../ui/Pagination";
 import { useSearchParams } from "react-router-dom";
-
+import Menus from "../../ui/Menus";
 const COLUMNS = "1.5fr 2fr 2.5fr 1.5fr 1fr 1fr";
 const PAGE_SIZE = 10;
 
@@ -27,7 +27,7 @@ function BookingTable() {
   if (!bookings || bookings.length === 0) return <Empty resource="bookings" />;
 
   return (
-    <>
+    <Menus>
       <Table>
         <Table.Header columns={COLUMNS}>
           <div>Cabin</div>
@@ -52,7 +52,7 @@ function BookingTable() {
         onPageChange={handlePageChange}
         pageSize={PAGE_SIZE}
       />
-    </>
+    </Menus>
   );
 }
 

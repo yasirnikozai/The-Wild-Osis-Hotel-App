@@ -6,6 +6,9 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import Menus from "../../ui/Menus";
+import { HiArrowDownOnSquare, HiEye } from "react-icons/hi2";
+import { useNavigate } from "react-router-dom";
 
 const TableRow = styled.div`
   display: grid;
@@ -64,6 +67,7 @@ function BookingRow({
     "checked-in": "green",
     "checked-out": "silver",
   };
+  const Navigate = useNavigate();
 
   return (
     <TableRow role="row">
@@ -90,6 +94,25 @@ function BookingRow({
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
+      <Menus.Menu>
+        <Menus.Toggle id={bookingId} />
+        <Menus.List id={bookingId}>
+          <Menus.Button
+            icon={<HiEye />}
+            onClick={() => Navigate(`/bookings/${bookingId}`)}
+          >
+            See Details
+          </Menus.Button>
+          {status === "unconfirmed" && (
+            <Menus.Button
+              icon={<HiArrowDownOnSquare />}
+              onClick={() => Navigate(`/bookings/${bookingId}`)}
+            >
+              Check In
+            </Menus.Button>
+          )}
+        </Menus.List>
+      </Menus.Menu>
     </TableRow>
   );
 }
