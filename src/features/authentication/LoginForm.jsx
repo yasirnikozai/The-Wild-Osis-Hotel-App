@@ -12,7 +12,15 @@ function LoginForm() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    createUser({ email, password });
+    createUser(
+      { email, password },
+      {
+        onSettled: () => {
+          setEmail("");
+          setPassword("");
+        },
+      }
+    );
   }
 
   return (
