@@ -13,11 +13,9 @@ import { Flag } from "../../ui/Flag";
 import { formatDistanceFromNow, formatCurrency } from "../../utils/helpers";
 
 const StyledBookingDataBox = styled.section`
-  /* Box */
   background-color: var(--color-grey-0);
   border: 1px solid var(--color-grey-100);
   border-radius: var(--border-radius-md);
-
   overflow: hidden;
 `;
 
@@ -101,7 +99,6 @@ const Footer = styled.footer`
   text-align: right;
 `;
 
-// A purely presentational component
 function BookingDataBox({ booking }) {
   const {
     created_at,
@@ -110,7 +107,7 @@ function BookingDataBox({ booking }) {
     numNights,
     numGuests,
     cabinPrice,
-    extrasPrice,
+    extrasPrice = 0, // ✅ fallback to avoid NaN
     totalPrice,
     hasBreakfast,
     observations,
@@ -164,7 +161,7 @@ function BookingDataBox({ booking }) {
         </DataItem>
 
         <Price isPaid={isPaid}>
-          <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
+          <DataItem icon={<HiOutlineCurrencyDollar />} label="Total price">
             {formatCurrency(totalPrice)}
 
             {hasBreakfast &&

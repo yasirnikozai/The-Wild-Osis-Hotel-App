@@ -7,9 +7,11 @@ import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import Menus from "../../ui/Menus";
-import { HiArrowDownOnSquare, HiEye } from "react-icons/hi2";
+import { HiArrowDownOnSquare, HiEye, HiTrash } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-
+import useDeleteBookings from "./useDeleteBookings";
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 const TableRow = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
@@ -62,6 +64,8 @@ function BookingRow({
     cabins: { name: cabinName },
   },
 }) {
+  const { isDeleting, deleteBookingMutate } = useDeleteBookings();
+
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -94,25 +98,43 @@ function BookingRow({
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
 
       <Amount>{formatCurrency(totalPrice)}</Amount>
-      <Menus.Menu>
-        <Menus.Toggle id={bookingId} />
-        <Menus.List id={bookingId}>
-          <Menus.Button
-            icon={<HiEye />}
-            onClick={() => Navigate(`/bookings/${bookingId}`)}
-          >
-            See Details
-          </Menus.Button>
-          {status === "unconfirmed" && (
+      <Modal>
+        <Menus.Menu>
+          <Menus.Toggle id={bookingId} />
+          <Menus.List id={bookingId}>
             <Menus.Button
-              icon={<HiArrowDownOnSquare />}
+              icon={<HiEye />}
               onClick={() => Navigate(`/bookings/${bookingId}`)}
             >
-              Check In
+              See Details
             </Menus.Button>
-          )}
-        </Menus.List>
-      </Menus.Menu>
+
+            {status === "unconfirmed" && (
+              <Menus.Button
+                icon={<HiArrowDownOnSquare />}
+                onClick={() => Navigate(`/bookings/${bookingId}`)}
+              >
+                Check In
+              </Menus.Button>
+            )}
+
+            <Modal.Open opens="delete">
+              <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+            </Modal.Open>
+          </Menus.List>
+        </Menus.Menu>
+
+        <Modal.Window name="delete">
+          <ConfirmDelete
+            resourceName="booking"
+            onConfirm={() =>
+              deleteBookingMutate(bookingId, {
+                onSettled: () => Navigate("/bookings"), // Optional redirect
+              })
+            }
+          />
+        </Modal.Window>
+      </Modal>
     </TableRow>
   );
 }

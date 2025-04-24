@@ -12,7 +12,9 @@ import { useMoveBack } from "../../hooks/useMoveBack";
 import { useBookingAll } from "./useBookingsAll";
 import Spinner from "../../ui/Spinner";
 import { useNavigate } from "react-router-dom";
-
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import useDeleteBookings from "./useDeleteBookings";
 const HeadingGroup = styled.div`
   display: flex;
   gap: 2.4rem;
@@ -21,6 +23,7 @@ const HeadingGroup = styled.div`
 
 function BookingDetail() {
   const { isLoading, booking } = useBookingAll();
+  const { isDeleting, deleteBookingMutate } = useDeleteBookings();
   const moveBack = useMoveBack();
   const navigate = useNavigate();
 
@@ -52,6 +55,22 @@ function BookingDetail() {
             Check In
           </Button>
         )}
+        <Modal>
+          <Modal.Open opens="delete">
+            <Button variation="danger">Delete Booking</Button>
+          </Modal.Open>
+          <Modal.Window name="delete">
+            <ConfirmDelete
+              disabled={isDeleting}
+              resourceName="booking"
+              onConfirm={() =>
+                deleteBookingMutate(bookingId, {
+                  onSettled: () => navigate(-1),
+                })
+              }
+            />
+          </Modal.Window>
+        </Modal>
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>

@@ -9,9 +9,17 @@ const LoginLayout = styled.main`
   gap: 3.2rem;
   background-color: var(--color-grey-50);
 `;
-
+import LoginForm from "../features/authentication/LoginForm";
+import Logo from "../ui/Logo";
+import Heading from "../ui/Heading";
 function Login() {
-  return <LoginLayout>Login</LoginLayout>;
+  return (
+    <LoginLayout>
+      <Logo />
+      <Heading as="h4">Please Log in Here</Heading>
+      <LoginForm />
+    </LoginLayout>
+  );
 }
 
 export default Login;

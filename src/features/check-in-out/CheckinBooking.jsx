@@ -23,6 +23,7 @@ const Box = styled.div`
 
 function CheckinBooking() {
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [addBreakfast, setAddBreakfast] = useState(false);
   const moveBack = useMoveBack();
   const { isLoading, booking } = useBookingAll();
   const { checkIn, isCheckingIn } = useCheckin();
@@ -58,6 +59,18 @@ function CheckinBooking() {
 
       <BookingDataBox booking={booking} />
 
+      {/* Add Breakfast Checkbox */}
+      <Box>
+        <Checkbox
+          checked={addBreakfast}
+          onChange={() => setAddBreakfast((prev) => !prev)}
+          disabled={isCheckingIn}
+        >
+          Add Breakfast
+        </Checkbox>
+      </Box>
+
+      {/* Confirm Payment Checkbox */}
       <Box>
         <Checkbox
           checked={isConfirmed}
@@ -65,7 +78,7 @@ function CheckinBooking() {
           id="confirm"
           disabled={isConfirmed || isCheckingIn}
         >
-          I confirm that the {guests.fullName} has been paid.
+          I confirm that {guests.fullName} has paid.
         </Checkbox>
       </Box>
 
