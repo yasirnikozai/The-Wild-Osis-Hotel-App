@@ -1,5 +1,25 @@
 import supabase from "./supabase";
 
+//sign up
+export async function SignUp({ fullName, email, password }) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        fullName,
+        avatar: "",
+      },
+    },
+  });
+  console.log("🧠 Supabase SignUp Response:", data);
+
+  if (error) {
+    return error.message;
+  }
+  return data;
+}
+
 export async function login({ email, password }) {
   try {
     // Call Supabase Auth API to sign in with email and password
@@ -13,9 +33,6 @@ export async function login({ email, password }) {
       throw new Error(error.message);
     }
 
-    console.log("Login successful:", data);
-
-    // Return user data or session data
     return data; // This can be session info or user info depending on what you need
   } catch (err) {
     console.error("Login failed:", err.message);
@@ -25,16 +42,15 @@ export async function login({ email, password }) {
 }
 
 export async function getCurrentUser() {
-  const { data, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
+  if (!user) return null;
 
-  // If there's no user data
-  if (!data?.user) return null;
-
-  return data.user;
+  return user;
 }
 //logout
 export async function logout() {
