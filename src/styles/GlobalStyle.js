@@ -1,7 +1,8 @@
 import { createGlobalStyle } from "styled-components";
-const GlobalStyle = createGlobalStyle `
+
+const GlobalStyle = createGlobalStyle`
 :root {
-  /* Indigo */
+  /* Brand Colors (Indigo) */
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
   --color-brand-200: #c7d2fe;
@@ -11,7 +12,7 @@ const GlobalStyle = createGlobalStyle `
   --color-brand-800: #3730a3;
   --color-brand-900: #312e81;
 
-  /* Grey */
+  /* Default Greys (light mode) */
   --color-grey-0: #fff;
   --color-grey-50: #f9fafb;
   --color-grey-100: #f3f4f6;
@@ -24,6 +25,7 @@ const GlobalStyle = createGlobalStyle `
   --color-grey-800: #1f2937;
   --color-grey-900: #111827;
 
+  /* Extra colors */
   --color-blue-100: #e0f2fe;
   --color-blue-700: #0369a1;
   --color-green-100: #dcfce7;
@@ -34,13 +36,12 @@ const GlobalStyle = createGlobalStyle `
   --color-silver-700: #374151;
   --color-indigo-100: #e0e7ff;
   --color-indigo-700: #4338ca;
-
   --color-red-100: #fee2e2;
   --color-red-700: #b91c1c;
   --color-red-800: #991b1b;
 
+  /* Common */
   --backdrop-color: rgba(255, 255, 255, 0.1);
-
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 2.4rem 3.2rem rgba(0, 0, 0, 0.12);
@@ -50,9 +51,61 @@ const GlobalStyle = createGlobalStyle `
   --border-radius-md: 7px;
   --border-radius-lg: 9px;
 
-  /* For dark mode */
+  /* Default image styles */
   --image-grayscale: 0;
   --image-opacity: 100%;
+
+  /* Set default text and background */
+  --color-background: #ffffff;
+  --color-text: #374151;
+}
+
+/* 🌞 Light mode (override root if needed) */
+.light-mode {
+  --color-background: #ffffff;
+  --color-text: #374151;
+
+  --color-grey-0: #ffffff;
+  --color-grey-50: #f9fafb;
+  --color-grey-100: #f3f4f6;
+  --color-grey-200: #e5e7eb;
+  --color-grey-300: #d1d5db;
+  --color-grey-400: #9ca3af;
+  --color-grey-500: #6b7280;
+  --color-grey-600: #4b5563;
+  --color-grey-700: #374151;
+  --color-grey-800: #1f2937;
+  --color-grey-900: #111827;
+
+  --image-grayscale: 0;
+  --image-opacity: 100%;
+}
+
+/* 🌚 Dark mode */
+.dark-mode {
+  --color-background: #111827;
+  --color-text: #f3f4f6;
+
+  /* Override greys */
+  --color-grey-0: #111827;
+  --color-grey-50: #1f2937;
+  --color-grey-100: #374151;
+  --color-grey-200: #4b5563;
+  --color-grey-300: #6b7280;
+  --color-grey-400: #9ca3af;
+  --color-grey-500: #d1d5db;
+  --color-grey-600: #e5e7eb;
+  --color-grey-700: #f3f4f6;
+  --color-grey-800: #f9fafb;
+  --color-grey-900: #ffffff;
+
+  /* Slightly adjust brand colors if you want */
+  --color-brand-500: #818cf8;
+  --color-brand-600: #6366f1;
+  --color-brand-700: #4f46e5;
+
+  --image-grayscale: 10%;
+  --image-opacity: 90%;
 }
 
 *,
@@ -61,9 +114,7 @@ const GlobalStyle = createGlobalStyle `
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-
-  /* Creating animations for dark mode */
-  transition: background-color 0.3s, border 0.3s;
+  transition: background-color 0.3s, border 0.3s, color 0.3s;
 }
 
 html {
@@ -72,8 +123,8 @@ html {
 
 body {
   font-family: "Poppins", sans-serif;
-  color: var(--color-grey-700);
-
+  color: var(--color-text);
+  background-color: var(--color-background);
   transition: color 0.3s, background-color 0.3s;
   min-height: 100vh;
   line-height: 1.5;
@@ -110,7 +161,6 @@ select:focus {
   outline-offset: -1px;
 }
 
-/* Parent selector, finally 😃 */
 button:has(svg) {
   line-height: 0;
 }
@@ -137,8 +187,8 @@ h6 {
 
 img {
   max-width: 100%;
-
-  /* For dark mode */
   filter: grayscale(var(--image-grayscale)) opacity(var(--image-opacity));
-}`;
+}
+`;
+
 export default GlobalStyle;

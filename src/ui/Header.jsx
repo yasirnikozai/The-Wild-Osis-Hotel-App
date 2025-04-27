@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import UserAvatar from "../features/authentication/UserAvatar";
 import HeaderMenu from "./HeaderMenu";
-
+import DarkMode from "./DarkMode";
 const StyledHeader = styled.header`
   background-color: ${({ bg }) => bg || "var(--color-grey-0)"};
   padding: ${({ padding }) => padding || "1.2rem 4.8rem"};
@@ -20,6 +20,7 @@ export default function Header() {
       border="1px solid var(--color-gray-100)"
     >
       <UserAvatar />
+      <DarkMode />
       <HeaderMenu />
     </StyledHeader>
   );
