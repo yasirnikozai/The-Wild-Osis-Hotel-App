@@ -1,144 +1,169 @@
 import { getToday } from "../utils/helpers";
 import supabase from "./supabase";
 export async function getBookingAll({
-    filter,
-    sortBy,
-    page = 1,
-    pageSize = 10,
+  filter,
+  sortBy,
+  page = 1,
+  pageSize = 10,
 }) {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
 
-    let query = supabase
-        .from("bookings")
-        .select("*, cabins(name), guests(fullName, email)", { count: "exact" }) // Get count
-        .range(from, to);
+  let query = supabase
+    .from("bookings")
+    .select("*, cabins(name), guests(fullName, email)", { count: "exact" }) // Get count
+    .range(from, to);
 
-    if (filter !== null) {
-        query = query.eq(filter.field, filter.value);
-    }
+  if (filter !== null) {
+    query = query.eq(filter.field, filter.value);
+  }
 
-    if (sortBy) {
-        const [field, direction] = sortBy.split("-");
-        query = query.order(field, { ascending: direction === "asc" });
-    }
+  if (sortBy) {
+    const [field, direction] = sortBy.split("-");
+    query = query.order(field, { ascending: direction === "asc" });
+  }
 
-    const { data, error, count } = await query;
+  const { data, error, count } = await query;
 
-    if (error) {
-        console.error(error);
-        throw new Error("Bookings could not be loaded");
-    }
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not be loaded");
+  }
 
-    return { data, count };
+  return { data, count };
 }
 
 export async function getBooking(id) {
-    const { data, error } = await supabase
-        .from("bookings")
-        .select("*, cabins(*), guests(*)")
-        .eq("id", id)
-        .single();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("*, cabins(*), guests(*)")
+    .eq("id", id)
+    .single();
 
-    if (error) {
-        console.error(error);
-        throw new Error("Booking not found");
-    }
+  if (error) {
+    console.error(error);
+    throw new Error("Booking not found");
+  }
 
-    return data;
+  return data;
 }
 
 // Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
 export async function getBookingsAfterDate(date) {
-    const { data, error } = await supabase
-        .from("bookings")
-        .select("created_at, totalPrice, extrasPrice")
-        .gte("created_at", date)
-        .lte("created_at", getToday({ end: true }));
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("created_at, totalPrice, extrasPrice")
+    .gte("created_at", date)
+    .lte("created_at", getToday({ end: true }));
 
-    if (error) {
-        console.error(error);
-        throw new Error("Bookings could not get loaded");
-    }
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
+  }
 
-    return data;
+  return data;
 }
 
-// Returns all STAYS that are were created after the given date
+// // Returns all STAYS that are were created after the given date
 export async function getStaysAfterDate(date) {
-    const { data, error } = await supabase
-        .from("bookings")
-        // .select('*')
-        .select("*, guests(fullName)")
-        .gte("startDate", date)
-        .lte("startDate", getToday());
+  const { data, error } = await supabase
+    .from("bookings")
+    // .select('*')
+    .select("*, guests(fullName)")
+    .gte("startDate", date)
+    .lte("startDate", getToday());
 
-    if (error) {
-        console.error(error);
-        throw new Error("Bookings could not get loaded");
-    }
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
+  }
 
-    return data;
+  return data;
 }
 
-// Activity means that there is a check in or a check out today
-export async function getStaysTodayActivity() {
-    const { data, error } = await supabase
-        .from("bookings")
-        .select("*, guests(fullName, nationality, countryFlag)")
-        .or(
-            `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
-        )
-        .order("created_at");
+// // Activity means that there is a check in or a check out today
+// export async function getStaysTodayActivity() {
+//   const { data, error } = await supabase
+//     .from("bookings")
+//     .select("*, guests(fullName, nationality, countryFlag)")
+//     .or(
+//       `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
+//     )
+//     .order("created_at");
 
-    // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
-    // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
-    // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
+//   // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
+//   // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
+//   // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
 
-    if (error) {
-        console.error(error);
-        throw new Error("Bookings could not get loaded");
-    }
-    return data;
-}
+//   if (error) {
+//     console.error(error);
+//     throw new Error("Bookings could not get loaded");
+//   }
+//   return data;
+// }
 
 export async function updateBooking(id, obj) {
-    const { data, error } = await supabase
-        .from("bookings")
-        .update(obj)
-        .eq("id", id)
-        .select()
-        .single();
+  const { data, error } = await supabase
+    .from("bookings")
+    .update(obj)
+    .eq("id", id)
+    .select()
+    .single();
 
-    if (error) {
-        console.error(error);
-        throw new Error("Booking could not be updated");
-    }
-    return data;
+  if (error) {
+    console.error(error);
+    throw new Error("Booking could not be updated");
+  }
+  return data;
 }
 
 export async function deleteBooking(id) {
-    const { data, error } = await supabase
-        .from("bookings")
-        .delete()
-        .eq("id", id)
-        .select(); // ensure return value
+  const { data, error } = await supabase
+    .from("bookings")
+    .delete()
+    .eq("id", id)
+    .select(); // ensure return value
 
-    if (error) {
-        console.error("Delete error:", error.message);
-        throw new Error("Booking could not be deleted");
-    }
+  if (error) {
+    console.error("Delete error:", error.message);
+    throw new Error("Booking could not be deleted");
+  }
 
-    return data;
+  return data;
 }
 
 export async function checkinBooking(bookingId) {
-    const { data, error } = await supabase
-        .from("bookings")
-        .update({ status: "checked-in", isPaid: true })
-        .eq("id", bookingId)
-        .select();
+  const { data, error } = await supabase
+    .from("bookings")
+    .update({ status: "checked-in", isPaid: true })
+    .eq("id", bookingId)
+    .select();
 
-    if (error) throw new Error("Could not check in booking");
-    return data;
+  if (error) throw new Error("Could not check in booking");
+  return data;
 }
+
+export async function getBookingAfterDate(date) {
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("created_at, totalPrice, extraPrice")
+    .gte("created_at", date)
+    .lte("created_at", getToday({ end: true }));
+  if (error) {
+    console.log(error.message);
+    throw new Error("Booking cannot be loaded");
+  }
+  return data;
+}
+// export async function getStaysAfterDate(date) {
+//   const { data, error } = await supabase
+//     .from("bookings")
+//     .select("*", "guests(fullName)")
+//     .gte("startDate", date)
+//     .lte("startDate", getToday());
+//   if (error) {
+//     console.log(error.message);
+//     throw new Error("Booking cannot be loaded");
+//   }
+//   return data || [];
+// }
