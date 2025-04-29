@@ -5,6 +5,7 @@ import { useStaysAfterDate } from "./useStaysAfterDate";
 import Spinner from "../../ui/Spinner";
 import Stats from "./Stats";
 import { useCabins } from "../cabins/useCabins";
+
 // Styled Component
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -26,18 +27,21 @@ export default function DashboardLayout() {
     isLoading: isLoadingStays,
     numDays,
   } = useStaysAfterDate();
-  const { isLoading3, cabins } = useCabins();
-  console.log(cabins);
 
-  if ((isLoadingBookings || isLoadingStays, isLoading3)) return <Spinner />;
+  // 🏕️ Fetch cabins data
+  const { isLoading: isLoadingCabins, cabins, error } = useCabins();
+
+  // 🚀 Correct loading check
+  if (isLoadingBookings || isLoadingStays || isLoadingCabins)
+    return <Spinner />;
 
   return (
     <StyledDashboardLayout>
       <Stats
         bookings={bookingAfterDate}
-        confrimedStays={confirmedStays}
+        confirmedStays={confirmedStays}
         numDays={numDays}
-        cabinCount={cabins}
+        cabinCount={cabins?.length}
       />
       <div>Today's Activity</div>
       <div>Chart Sales</div>

@@ -9,14 +9,18 @@ export default function Stats({
   numDays,
   cabinCount,
 }) {
-  const numBookings = bookings?.length || 0; // If bookings is undefined, default to 0
-  const sales = bookings?.reduce((acc, cur) => acc + cur.totalPrice, 0) || 0; // Default to 0 if bookings is undefined
-  const checkIns = confirmedStays?.length || 0; // If confirmedStays is undefined, default to 0
-  const occupacy = confirmedStays?.reduce(
-    acc,
-    (cur) => acc + cur.numNights,
-    (0 / numDays) * cabinCount
-  );
+  const numBookings = bookings?.length; // If bookings is undefined, default to 0
+  const sales = bookings?.reduce((acc, cur) => acc + cur.totalPrice, 0); // Default to 0 if bookings is undefined
+  const checkIns = confirmedStays?.length; // If confirmedStays is undefined, default to 0
+
+  // Correct occupancy calculation
+  const totalNights =
+    confirmedStays?.reduce((acc, cur) => acc + cur.numNights, 0) || 0; // Total nights stayed
+  const totalAvailableNights = numDays * cabinCount; // Total available nights
+  const occupancy = totalAvailableNights
+    ? (totalNights / totalAvailableNights) * 100
+    : 0;
+
   return (
     <>
       <Stat
@@ -38,10 +42,10 @@ export default function Stats({
         value={checkIns}
       />
       <Stat
-        title="Occupacy"
+        title="Occupancy"
         color="yellow"
         icon={<HiOutlineChartBar />}
-        value={numBookings}
+        value={totalNights.toFixed(2)} // Display the occupancy with 2 decimal points
       />
     </>
   );
